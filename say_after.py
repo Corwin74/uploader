@@ -1,19 +1,22 @@
 import asyncio
-import time
+import sys
 
 
-async def archive():
-    proc = await asyncio.create_subprocess_exec("echo", "Hello World!", stdout=asyncio.subprocess.PIPE)
+async def run_blocker():
+    blocking_code = "import time; print('Hello', flush=True); time.sleep(10);\
+        print('World!', flush=True)"
+    proc = await asyncio.create_subprocess_exec(
+        sys.executable, '-c', blocking_code, stdout=asyncio.subprocess.PIPE,
+    )
+    print('Ping')
     while True:
         if proc.stdout.at_eof():
             break
         data = await proc.stdout.read(1)
-        print(f'Received: {data.decode()!r}')
-        print('\n')
+        print(data.decode())
+    await proc.wait()
+    print('Pong')
+    return
 
 
-async def main():
-
-    await archive()
-
-asyncio.run(main())
+asyncio.run(run_blocker())
