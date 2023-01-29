@@ -12,7 +12,7 @@ async def run_blocker():
     while True:
         if proc.stdout.at_eof():
             break
-        data = await proc.stdout.read(1)
+        data = await proc.stdout.read(5)
         print(data.decode())
     await proc.wait()
     print('Pong')
